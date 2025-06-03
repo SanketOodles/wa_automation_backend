@@ -38,7 +38,7 @@ function createClientForAccount(userId, accountId) {
     }),
     puppeteer: {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: false,
+      headless: true, // Change to true to prevent browser window from showing
     }
   });
 

@@ -74,6 +74,11 @@ function getActiveClientsList() {
  */
 const getDatafromreq = async (req, res) => {
     try {
+        // Set CORS headers to prevent issues with frontend
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        
         console.log('API hit: Creating new WhatsApp client while keeping previous ones active');
         
         // Get IP address from request
@@ -86,9 +91,14 @@ const getDatafromreq = async (req, res) => {
         // Get org_id from query parameters or request body
         const org_id = req.query.org_id || (req.body && req.body.org_id) || 1; // Default to 1 if not provided
         
-        // Initialize a new client (without destroying previous ones)
-        initializeClient();
-        currentQR = null; // Reset current QR code
+        // Check if client should be initialized based on query param
+        const shouldInitialize = req.query.initialize !== 'false';
+        
+        if (shouldInitialize) {
+            // Initialize a new client (without destroying previous ones)
+            initializeClient();
+            currentQR = null; // Reset current QR code
+        }
         
         console.log('Waiting for new QR code...');
         
@@ -200,6 +210,7 @@ const getDatafromreq = async (req, res) => {
             res.status(200).json({
                 msg: "QR code Generated and stored in accounts",
                 qrDataURL,
+                qrData: qr, // Also provide raw QR data
                 account: {
                     id: account.id,
                     org_id: account.org_id,
@@ -216,7 +227,8 @@ const getDatafromreq = async (req, res) => {
             res.status(500).json({
                 msg: "QR code generated but failed to store in database",
                 error: dbError.toString(),
-                qrDataURL
+                qrDataURL,
+                qrData: qr // Still provide QR data even if DB storage fails
             });
         }
     } catch (error) {
