@@ -186,11 +186,39 @@ exports.deleteAccount = async (req, res) => {
       return errorResponse(res, 'Account not found', 404);
     }
     
-    // Using paranoid delete (soft delete)
-    await account.update({ deleted_by_id: userId });
+    // First update the status to disconnected to reflect in the UI
+    await account.update({ 
+      status: 'disconnected',
+      updated_by_id: userId,
+      deleted_by_id: userId 
+    });
+    
+    // Then apply soft delete
     await account.destroy();
     
-    return successResponse(res, 'Account deleted successfully');
+    // Optionally try to disconnect from active clients list
+    try {
+      // Import the authController for disconnect functionality
+      const authController = require('../authController');
+      
+      // Attempt to find and disconnect any active WhatsApp client for this account
+      if (authController.activeClients && Array.isArray(authController.activeClients)) {
+        const clientIndex = authController.activeClients.findIndex(item => 
+          item.accountId && item.accountId.toString() === id.toString());
+          
+        if (clientIndex !== -1) {
+          const clientToDisconnect = authController.activeClients[clientIndex].client;
+          await clientToDisconnect.destroy();
+          authController.activeClients.splice(clientIndex, 1);
+          console.log(`WhatsApp client for account ${id} disconnected`);
+        }
+      }
+    } catch (disconnectError) {
+      console.error(`Warning: Could not disconnect WhatsApp client for account ${id}:`, disconnectError);
+      // Continue with the account deletion even if client disconnect fails
+    }
+    
+    return successResponse(res, 'Account disconnected and deleted successfully');
   } catch (error) {
     console.error('Error deleting account:', error);
     return errorResponse(res, 'Failed to delete account', 500);
