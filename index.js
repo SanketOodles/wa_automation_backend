@@ -70,13 +70,13 @@ async function initializeDatabase() {
     await db.sequelize.sync({ force: false });
     console.log('All remaining tables created');
     
-    // Initialize default roles (Admin, Manager, Manager 2, User)
-    // try {
-    //   await roleController.initializeDefaultRoles();
-    //   console.log('Default roles initialized successfully');
-    // } catch (error) {
-    //   console.error('Error initializing default roles:', error);
-    // }
+    // Initialize default roles
+    try {
+      await roleController.initializeDefaultRoles();
+      console.log('Default roles initialized successfully');
+    } catch (error) {
+      console.error('Error initializing default roles:', error);
+    }
     
     return true;
   } catch (error) {

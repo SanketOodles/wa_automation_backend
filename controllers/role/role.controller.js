@@ -14,37 +14,29 @@ exports.initializeDefaultRoles = async () => {
     
     // Default roles configuration
     const defaultRoles = [
-      { 
-        id: 1, 
-        name: 'Admin', 
+      {
+        id: 1,
+        name: 'Super Admin',
         status: 'active',
         created_at: new Date(),
         updated_at: new Date(),
-        created_by_id: 1,  // Admin is self-created
+        created_by_id: 1, // Assuming Super Admin is self-created or by a system user ID 1
       },
-      { 
-        id: 2, 
-        name: 'Manager', 
+      {
+        id: 2,
+        name: 'Admin',
         status: 'active',
         created_at: new Date(),
-        updated_at: new Date()
-        // Note: created_by_id is intentionally left null for non-Admin roles
+        updated_at: new Date(),
+        created_by_id: 1, // Can be null or 1, depending on audit requirements
       },
-      { 
-        id: 3, 
-        name: 'Manager 2', 
+      {
+        id: 3,
+        name: 'User',
         status: 'active',
         created_at: new Date(),
-        updated_at: new Date()
-        // Note: created_by_id is intentionally left null for non-Admin roles
-      },
-      { 
-        id: 4, 
-        name: 'User', 
-        status: 'active',
-        created_at: new Date(),
-        updated_at: new Date()
-        // Note: created_by_id is intentionally left null for non-Admin roles
+        updated_at: new Date(),
+        created_by_id: 1, // Can be null or 1
       }
     ];
     
