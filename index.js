@@ -25,6 +25,7 @@ const roleRoutes = require('./routes/role.routes');
 const userRoutes = require('./routes/users.routes');
 const authRoute = require('./routes/authRoutes');
 const accountsRoutes = require('./routes/accounts.routes');
+const supplierRoutes = require('./routes/suppliers');
 
 // Register routes
 app.use('/api/auth', authRoutes);
@@ -32,6 +33,9 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auths', authRoute); // for qr generation
 app.use('/api/auths', accountsRoutes); // accounts management under the auths path for frontend compatibility
+
+// Suppliers routes
+app.use('/api/suppliers', supplierRoutes);
 
 // Root route
 app.get('/', (req, res) => {
