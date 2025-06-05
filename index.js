@@ -6,6 +6,7 @@ const db = require('./models');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const roleController = require('./controllers/role/role.controller');
+const organisationController = require('./controllers/organisations/organisation.controller');
 
 // Initialize Express
 const app = express();
@@ -25,7 +26,8 @@ const roleRoutes = require('./routes/role.routes');
 const userRoutes = require('./routes/users.routes');
 const authRoute = require('./routes/authRoutes');
 const accountsRoutes = require('./routes/accounts.routes');
-const supplierRoutes = require('./routes/suppliers');
+const supplierRoutes = require('./routes/suppliers.routes');
+const organisationRoutes = require('./routes/organisations.routes')
 
 // Register routes
 app.use('/api/auth', authRoutes);
@@ -33,16 +35,14 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auths', authRoute); // for qr generation
 app.use('/api/auths', accountsRoutes); // accounts management under the auths path for frontend compatibility
-
-// Suppliers routes
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/organisations', organisationRoutes);
 
 // Root route
 app.get('/', (req, res) => {
   res.send('WA-Automation Authentication Service is running');
 });
 
-// Database connection and server initialization
 // Database connection and server initialization
 async function initializeDatabase() {
   try {
@@ -70,7 +70,7 @@ async function initializeDatabase() {
     await db.Product.sync({ force: false });
     console.log('Product table created');
     
-    // Continue with other tables
+    // Sync any remaining tables
     await db.sequelize.sync({ force: false });
     console.log('All remaining tables created');
     
@@ -80,6 +80,14 @@ async function initializeDatabase() {
       console.log('Default roles initialized successfully');
     } catch (error) {
       console.error('Error initializing default roles:', error);
+    }
+
+    // Initialize default organization
+    try {
+      await organisationController.initializeDefaultOrganization();
+      console.log('Default organization initialized successfully');
+    } catch (error) {
+      console.error('Error initializing default organization:', error);
     }
     
     return true;
