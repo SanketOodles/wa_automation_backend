@@ -634,10 +634,6 @@ Adminservice <-> Whatsappservice
 
 ## Documentation
 
-For detailed documentation, refer to:
-- [WORKFLOW.md](WORKFLOW.md) - Workflow documentation
 - Swagger documentation available at `/api-docs` endpoint
 
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
