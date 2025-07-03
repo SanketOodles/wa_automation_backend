@@ -1,317 +1,323 @@
-# Database Documentation
+# Nova-wa-be Project
 
-This document provides a comprehensive overview of the database schema and relationships for the application.
+A WhatsApp automation backend service built with Node.js, featuring three main service components: Adminservice, AiService, and Whatsappservice.
 
-## Table of Contents
+## Project Structure
 
-- [Product Schema](#product-schema)
-- [Chat Schema](#chat-schema)
-- [Organisation Schema](#organisation-schema)
-- [Entity Relationship Diagram](#entity-relationship-diagram)
+```
+Nova-wa-be/
+├── .env                    # Environment configuration
+├── .git/                   # Git repository files
+├── .wwebjs_auth/           # WhatsApp Web authentication files
+├── .wwebjs_cache/          # WhatsApp Web cache files
+├── Adminservice/           # Admin service component
+├── AiService/             # AI service component
+├── Whatsappservice/       # WhatsApp service component
+└── node_modules/          # Node.js dependencies
+```
 
-## Product Schema
+## Adminservice Component
 
-The Product Schema contains tables related to products, brands, and suppliers.
+The Adminservice component handles administrative functionality and database operations.
 
-### Brands
+```
+Adminservice/
+├── config/                # Configuration files
+├── controllers/          # API controllers
+├── middleware/           # Express middleware
+├── migrations/           # Database migrations
+├── models/              # Database models
+├── routes/              # API routes
+├── seeders/             # Database seeders
+├── sessions/            # Session management
+├── utils/              # Utility functions
+├── index.js            # Entry point
+├── swagger.js          # Swagger documentation
+├── swagger.json        # Swagger JSON
+└── testConnection.js   # Database connection test
+```
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| name | Brand name |
-| org_id | Foreign key to Organisations table |
-| status | Status of the brand |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+## AiService Component
 
-### Suppliers
+The AiService component handles AI-related functionality.
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| name | Supplier name |
-| org_id | Foreign key to Organisations table |
-| status | Status of the supplier |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+```
+AiService/
+├── routes/             # API routes
+├── utils/             # Utility functions
+├── index.js           # Entry point
+├── swagger.js         # Swagger documentation
+└── swagger.json       # Swagger JSON
+```
 
-### Product Brands
+## Whatsappservice Component
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| product_id | Foreign key to Products table |
-| brand_id | Foreign key to Brands table |
-| status | Status of the product brand relationship |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+The Whatsappservice component handles WhatsApp integration and messaging functionality.
 
-### Products
+```
+Whatsappservice/
+├── config/            # Configuration files
+├── controllers/       # API controllers
+├── middleware/        # Express middleware
+├── migrations/        # Database migrations
+├── models/           # Database models
+├── routes/           # API routes
+├── seeders/          # Database seeders
+├── sessions/         # Session management
+├── utils/           # Utility functions
+├── index.js         # Entry point
+├── swagger.js       # Swagger documentation
+└── swagger.json     # Swagger JSON
+```
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| name | Product name |
-| description | Product description |
-| color_name | Color of the product |
-| type | Type of product |
-| price | Price of the product |
-| status | Status of the product |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+## Key Features
 
-## Chat Schema
+- WhatsApp Web integration using wwebjs
+- Admin dashboard and management
+- AI-powered features
+- RESTful API endpoints
+- Database management with migrations and seeders
+- Swagger API documentation
+- Session management
+- Environment-based configuration
 
-The Chat Schema contains tables related to communication channels and messages.
+## Data Models and Relationships
 
-### Channels
+### Admin Service Models
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| name | Channel name |
-| type | Type of channel |
-| acc_id | Foreign key to Accounts table |
-| description | Channel description |
-| is_subscribed | Subscription status |
-| status | Status of the channel |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+1. **User Management**
+```javascript
+// User Model
+user.js - Represents system users
+- id
+- username
+- email
+- password
+- createdAt
+- updatedAt
 
-### Chats
+// Role Model
+role.js - User roles and permissions
+- id
+- name
+- description
+- permissions
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| original_message | Original message content |
-| message | Processed message content |
-| type | Type of chat message |
-| channel_id | Foreign key to Channels table |
-| is_ai_processed | Flag indicating if processed by AI |
-| parent_chat_id | Self-referencing foreign key to Chats table |
-| status | Status of the chat |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+// User Roles
+user_roles.js - Junction table for user-role relationships
+- userId
+- roleId
 
-### Chat Medias
+// User Activity
+userActivity.js - Tracks user actions
+- id
+- userId
+- action
+- timestamp
+```
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| unique_file_name | Unique identifier for the file |
-| file_name | Original file name |
-| bucket_name | Storage bucket name |
-| region | Storage region |
-| type | Type of media |
-| chat_id | Foreign key to Chats table |
-| status | Status of the media |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+2. **Organization Management**
+```javascript
+// Organisation Model
+organisation.js - Business organizations
+- id
+- name
+- addressId
+- createdAt
+- updatedAt
 
-### Chat Templates
+// Address Model
+Address.js - Physical addresses
+- id
+- street
+- city
+- state
+- countryId
+- postalCode
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| name | Template name |
-| content | Template content |
-| channel_id | Foreign key to Channels table |
-| status | Status of the template |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+// Country Model
+country.js - Countries
+countryAddress.js - Country-specific address formats
+```
 
-### Chat AI Logs
+3. **Product Management**
+```javascript
+// Product Model
+product.js - Products for sale
+- id
+- name
+- description
+- priceId
+- brandId
+- createdAt
+- updatedAt
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| ai_request | AI request data |
-| ai_response | AI response data |
-| chat_id | Foreign key to Chats table |
-| status | Status of the AI log |
-| crm_type | CRM type |
-| is_synced | Synchronization status |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+// Price Model
+price.js - Product pricing
+- id
+- amount
+- currency
+- effectiveDate
 
-## Organisation Schema
+// Brand Model
+brand.js - Product brands
+- id
+- name
+- description
+- createdAt
+- updatedAt
 
-The Organisation Schema contains tables related to users, roles, and permissions.
+// Product Brand
+productBrand.js - Junction table for product-brand relationships
+- productId
+- brandId
+```
 
-### Roles
+4. **Document Management**
+```javascript
+// Document Model
+Document.js - Product documents
+- id
+- name
+- type
+- url
+- productId
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| name | Role name |
-| status | Status of the role |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+// Product Document
+productDocument.js - Junction table for product-documents
+- productId
+- documentId
+```
 
-### Permissions
+### WhatsApp Service Models
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| module_name | Name of the module |
-| role_id | Foreign key to Roles table |
-| parent_permission_id | Self-referencing foreign key to Permissions table |
-| is_create | Create permission flag |
-| is_update | Update permission flag |
-| is_delete | Delete permission flag |
-| is_read | Read permission flag |
-| status | Status of the permission |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+1. **WhatsApp Integration**
+```javascript
+// WhatsApp Session
+whatsappSession.js - WhatsApp session management
+- id
+- sessionId
+- status
+- lastHeartbeat
+- createdAt
+- updatedAt
 
-### Organisations
+// WhatsApp Message
+whatsappmessage.js - WhatsApp messages
+- id
+- sessionId
+- messageId
+- content
+- sender
+- recipient
+- timestamp
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| name | Organisation name |
-| type_of_organisation | Type of organisation |
-| status | Status of the organisation |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+// Chat Model
+chat.js - Chat conversations
+- id
+- sessionId
+- participant
+- lastMessage
+- updatedAt
+```
 
-### User Roles
+2. **AI Integration**
+```javascript
+// Chat AI Log
+chatAILog.js - AI conversation logs
+- id
+- chatId
+- prompt
+- response
+- timestamp
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| user_id | Foreign key to Users table |
-| role_id | Foreign key to Roles table |
-| status | Status of the user role |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+// Chat Templates
+chatTemplates.js - Predefined message templates
+- id
+- name
+- content
+- category
+```
 
-### Users
+3. **Media Management**
+```javascript
+// Chat Media
+chatMedia.js - Media files in chats
+- id
+- chatId
+- type
+- url
+- size
+- mimeType
+```
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| first_name | User's first name |
-| last_name | User's last name |
-| email | User's email address |
-| phone | User's phone number |
-| hash_password | Hashed password |
-| org_id | Foreign key to Organisations table |
-| status | Status of the user |
-| acc_limit | Account limit |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+### Supplier Management
 
-### Accounts
+```javascript
+// Suppliers
+suppliers.js - Business suppliers
+- id
+- name
+- contact
+- addressId
+- createdAt
+- updatedAt
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| org_id | Foreign key to Organisations table |
-| qr_session | QR session data |
-| status | Status of the account |
-| ip_address | IP address |
-| location | Location information |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+// Supplier Products
+product.js - Supplier-specific products
+- id
+- supplierId
+- name
+- description
+- price
+```
 
-### User Activities
+### Channel Management
 
-| Column | Description |
-|--------|-------------|
-| id | Primary key |
-| user_id | Foreign key to Users table |
-| api_request_url | API request URL |
-| description | Activity description |
-| status | Status of the activity |
-| created_at | Timestamp when record was created |
-| updated_at | Timestamp when record was last updated |
-| deleted_at | Timestamp when record was soft deleted |
-| created_by_id | ID of user who created the record |
-| updated_by_id | ID of user who last updated the record |
-| deleted_by_id | ID of user who deleted the record |
+```javascript
+// Channel Model
+channel.js - Communication channels
+- id
+- name
+- type
+- configuration
+- status
+```
 
-## Entity Relationship Diagram
+### Relationship Diagram
 
-### Product Schema Relationships
-- `Brands.id` → `Product_Brands.brand_id`
-- `Products.id` → `Product_Brands.product_id`
-- `Organisations.id` → `Brands.org_id`
-- `Organisations.id` → `Suppliers.org_id`
+```
+User <-> User Roles <-> Role
+User -> User Activity
+User -> Organisation
+Organisation -> Address
+Address -> Country
 
-### Chat Schema Relationships
-- `Channels.id` → `Chats.channel_id`
-- `Chats.id` → `Chats.parent_chat_id` (self-referencing)
-- `Chats.id` → `Chat_Medias.chat_id`
-- `Channels.id` → `Chat_Templates.channel_id`
-- `Chats.id` → `Chat_Ai_Logs.chat_id`
+Product -> Price
+Product -> Brand
+Product <-> Document
+Product <-> Supplier
 
-### Organisation Schema Relationships
-- `Accounts.id` → `Channels.acc_id`
-- `Roles.id` → `User_Roles.role_id`
-- `Roles.id` → `Permissions.role_id`
-- `Users.id` → `User_Activities.user_id`
-- `Users.id` → `User_Roles.user_id`
-- `Organisations.id` → `Users.org_id`
-- `Organisations.id` → `Accounts.org_id`
-- `Permissions.id` → `Permissions.parent_permission_id` (self-referencing)
+WhatsApp Session -> WhatsApp Message
+WhatsApp Message -> Chat
+Chat -> Chat AI Log
+Chat -> Chat Media
+```
+
+## Getting Started
+
+1. Clone the repository
+2. Copy `.env` file and configure environment variables
+3. Install dependencies using npm or yarn
+4. Run database migrations
+5. Start the services
+
+## Documentation
+
+For detailed documentation, refer to:
+- [WORKFLOW.md](WORKFLOW.md) - Workflow documentation
+- Swagger documentation available at `/api-docs` endpoint
+
+## License
+
+[Add license information here]
