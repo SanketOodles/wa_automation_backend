@@ -83,225 +83,322 @@ Whatsappservice/
 
 ## Data Models and Relationships
 
-### Admin Service Models
+### Core User Management
 
-1. **User Management**
 ```javascript
 // User Model
-user.js - Represents system users
-- id
-- username
+user.js
+- id (PK)
+- first_name
+- last_name
 - email
-- password
-- createdAt
-- updatedAt
+- phone
+- hash_password
+- org_id (FK -> Organisation)
+- status
+- acc_limit
+- created_at
+- updated_at
+- deleted_at
+- created_by_id
+- updated_by_id
 
 // Role Model
-role.js - User roles and permissions
-- id
+role.js
+- id (PK)
 - name
-- description
-- permissions
+- status
+- created_at
+- updated_at
+- deleted_at
+- created_by_id
+- updated_by_id
+- deleted_by_id
 
-// User Roles
-user_roles.js - Junction table for user-role relationships
-- userId
-- roleId
+// User Role (Junction Table)
+user_roles.js
+- user_id (FK -> User)
+- role_id (FK -> Role)
 
 // User Activity
-userActivity.js - Tracks user actions
-- id
-- userId
+userActivity.js
+- id (PK)
+- user_id (FK -> User)
 - action
 - timestamp
 ```
 
-2. **Organization Management**
+### Organization Structure
+
 ```javascript
 // Organisation Model
-organisation.js - Business organizations
-- id
+organisation.js
+- id (PK)
 - name
-- addressId
-- createdAt
-- updatedAt
+- address_id (FK -> Address)
+- created_at
+- updated_at
+- deleted_at
 
 // Address Model
-Address.js - Physical addresses
-- id
+address.js
+- id (PK)
 - street
 - city
 - state
-- countryId
-- postalCode
+- country_id (FK -> Country)
+- postal_code
+- created_at
+- updated_at
 
 // Country Model
-country.js - Countries
-countryAddress.js - Country-specific address formats
+country.js
+- id (PK)
+- name
+- code
+- created_at
+- updated_at
 ```
 
-3. **Product Management**
+### Product Management
+
 ```javascript
 // Product Model
-product.js - Products for sale
-- id
+product.js
+- id (PK)
 - name
 - description
-- priceId
-- brandId
-- createdAt
-- updatedAt
+- price_id (FK -> Price)
+- brand_id (FK -> Brand)
+- created_at
+- updated_at
+- deleted_at
 
 // Price Model
-price.js - Product pricing
-- id
+price.js
+- id (PK)
 - amount
 - currency
-- effectiveDate
+- effective_date
+- created_at
+- updated_at
 
 // Brand Model
-brand.js - Product brands
-- id
+brand.js
+- id (PK)
 - name
 - description
-- createdAt
-- updatedAt
+- created_at
+- updated_at
+- deleted_at
 
-// Product Brand
-productBrand.js - Junction table for product-brand relationships
-- productId
-- brandId
-```
+// Product Brand (Junction Table)
+productBrand.js
+- product_id (FK -> Product)
+- brand_id (FK -> Brand)
 
-4. **Document Management**
-```javascript
+// Product Document (Junction Table)
+productDocument.js
+- product_id (FK -> Product)
+- document_id (FK -> Document)
+
 // Document Model
-Document.js - Product documents
-- id
+document.js
+- id (PK)
 - name
 - type
 - url
-- productId
-
-// Product Document
-productDocument.js - Junction table for product-documents
-- productId
-- documentId
+- created_at
+- updated_at
 ```
 
-### WhatsApp Service Models
+### WhatsApp Integration
 
-1. **WhatsApp Integration**
 ```javascript
-// WhatsApp Session
-whatsappSession.js - WhatsApp session management
-- id
-- sessionId
-- status
-- lastHeartbeat
-- createdAt
-- updatedAt
+// Chat Model
+chat.js
+- id (PK)
+- channel_id (FK -> Channel)
+- parent_chat_id (Self-FK)
+- org_id (FK -> Organisation)
+- product_id (FK -> Product)
+- created_at
+- updated_at
+- deleted_at
 
 // WhatsApp Message
-whatsappmessage.js - WhatsApp messages
-- id
-- sessionId
-- messageId
-- content
-- sender
-- recipient
+whatsappmessage.js
+- messageId (PK)
+- chatId (FK -> Chat)
+- body
+- fromMe
 - timestamp
+- type
+- media
 
-// Chat Model
-chat.js - Chat conversations
-- id
-- sessionId
-- participant
-- lastMessage
-- updatedAt
-```
-
-2. **AI Integration**
-```javascript
-// Chat AI Log
-chatAILog.js - AI conversation logs
-- id
-- chatId
-- prompt
-- response
-- timestamp
-
-// Chat Templates
-chatTemplates.js - Predefined message templates
-- id
-- name
-- content
-- category
-```
-
-3. **Media Management**
-```javascript
 // Chat Media
-chatMedia.js - Media files in chats
-- id
-- chatId
+chatMedia.js
+- id (PK)
+- chat_id (FK -> Chat)
 - type
 - url
 - size
-- mimeType
-```
+- mime_type
+- created_at
+- updated_at
 
-### Supplier Management
-
-```javascript
-// Suppliers
-suppliers.js - Business suppliers
-- id
-- name
-- contact
-- addressId
-- createdAt
-- updatedAt
-
-// Supplier Products
-product.js - Supplier-specific products
-- id
-- supplierId
-- name
-- description
-- price
+// Chat AI Log
+chatAILog.js
+- id (PK)
+- chat_id (FK -> Chat)
+- prompt
+- response
+- timestamp
+- created_at
+- updated_at
 ```
 
 ### Channel Management
 
 ```javascript
 // Channel Model
-channel.js - Communication channels
-- id
+channel.js
+- id (PK)
 - name
 - type
 - configuration
 - status
+- created_at
+- updated_at
+- deleted_at
+```
+
+### Supplier Management
+
+```javascript
+// Supplier Model
+suppliers.js
+- id (PK)
+- name
+- contact
+- address_id (FK -> Address)
+- created_at
+- updated_at
+- deleted_at
+
+// Supplier Product
+product.js
+- id (PK)
+- supplier_id (FK -> Supplier)
+- name
+- description
+- price
+- created_at
+- updated_at
+```
+
+### Detailed Relationships
+
+1. **User Management**
+```javascript
+User.belongsToMany(Role, { through: UserRole })
+Role.belongsToMany(User, { through: UserRole })
+User.hasMany(UserRole)
+Role.hasMany(UserRole)
+User.hasMany(UserActivity)
+User.belongsTo(Organisation)
+```
+
+2. **Chat Management**
+```javascript
+Chat.belongsTo(Channel)
+Chat.belongsTo(Chat, { as: 'parentChat' })
+Chat.hasMany(Chat, { as: 'replies' })
+Chat.hasMany(ChatMedia)
+Chat.hasMany(ChatAILog)
+Chat.belongsTo(Organisation)
+Chat.belongsTo(Product)
+```
+
+3. **WhatsApp Message Flow**
+```javascript
+WhatsappMessage.belongsTo(Chat)
+Chat.hasMany(WhatsappMessage)
+Chat.hasMany(ChatMedia)
+Chat.hasMany(ChatAILog)
+```
+
+4. **Organization Structure**
+```javascript
+Organisation.hasOne(Address)
+Address.belongsTo(Country)
+Organisation.hasMany(Chat)
+```
+
+5. **Product Structure**
+```javascript
+Product.belongsTo(Price)
+Product.belongsTo(Brand)
+Product.hasMany(ProductBrand)
+Product.hasMany(ProductDocument)
 ```
 
 ### Relationship Diagram
 
 ```
-User <-> User Roles <-> Role
-User -> User Activity
-User -> Organisation
-Organisation -> Address
-Address -> Country
+[User]
+  ↓ belongsToMany
+[Role]
+  ↑ belongsToMany
+[UserRole]
+  ↑ hasMany
+[User]
+  ↓ belongsTo
+[Organisation]
+  ↓ hasOne
+[Address]
+  ↓ belongsTo
+[Country]
 
-Product -> Price
-Product -> Brand
-Product <-> Document
-Product <-> Supplier
+[Chat]
+  ↓ belongsTo
+[Channel]
+  ↑ hasMany
+[Chat]
+  ↓ hasMany
+[ChatMedia]
+  ↑ belongsTo
+[Chat]
+  ↓ hasMany
+[ChatAILog]
+  ↑ belongsTo
+[Chat]
+  ↓ belongsTo
+[Organisation]
+  ↓ belongsTo
+[Product]
+  ↑ hasMany
+[Chat]
+  ↓ belongsTo
+[Product]
+  ↑ hasMany
+[ProductBrand]
+  ↑ belongsTo
+[Brand]
+  ↓ hasMany
+[ProductBrand]
+  ↑ hasMany
+[Product]
+  ↓ hasMany
+[ProductDocument]
+  ↑ belongsTo
+[Document]
 
-WhatsApp Session -> WhatsApp Message
-WhatsApp Message -> Chat
-Chat -> Chat AI Log
-Chat -> Chat Media
+[WhatsappMessage]
+  ↓ belongsTo
+[Chat]
+  ↑ hasMany
+[WhatsappMessage]
 ```
 
 ## Getting Started
